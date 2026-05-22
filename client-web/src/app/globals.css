@@ -98,7 +98,7 @@ body {
   }
 
   .auth-card {
-    @apply bg-white/88 dark:bg-slate-800/88 backdrop-blur-xl rounded-2xl
+    @apply bg-white/85 dark:bg-slate-800/85 backdrop-blur-xl rounded-2xl
            shadow-2xl border border-brand-pale/40 dark:border-slate-700/60
            p-8 w-full max-w-md;
   }
