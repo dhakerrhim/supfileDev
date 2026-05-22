@@ -88,7 +88,7 @@ function Skeleton({ className = '' }: { className?: string }) {
 function Toast({ message, type = 'success' }: { message: string; type?: 'success' | 'error' }) {
   return (
     <div className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl text-white text-sm
-                    font-medium shadow-lg flex items-center gap-2 ${type === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>
+                    font-medium shadow-lg flex items-center gap-2 animate-slide-in-right ${type === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>
       {type === 'error' ? '✗' : '✓'} {message}
     </div>
   );
@@ -139,7 +139,7 @@ function NewFolderModal({ onClose, onCreated }: { onClose: () => void; onCreated
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 p-6 w-full max-w-sm shadow-xl">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 p-6 w-full max-w-sm shadow-xl animate-slide-up-fade">
         <h3 className="font-semibold text-slate-dark dark:text-slate-100 mb-4">New Folder</h3>
         <form onSubmit={submit} className="space-y-4">
           <input
@@ -212,7 +212,7 @@ function ShareLinkModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 p-6 w-full max-w-md shadow-xl">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 p-6 w-full max-w-md shadow-xl animate-slide-up-fade">
         <h3 className="font-semibold text-slate-dark dark:text-slate-100 text-lg mb-1">
           Share &ldquo;{target.name}&rdquo;
         </h3>
@@ -319,7 +319,7 @@ function FolderShareModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 p-6 w-full max-w-sm shadow-xl">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 p-6 w-full max-w-sm shadow-xl animate-slide-up-fade">
         <h3 className="font-semibold text-slate-dark dark:text-slate-100 mb-1">Share with someone</h3>
         <p className="text-sm text-slate-mid dark:text-slate-400 mb-5">
           Give another user access to &ldquo;{folder.name}&rdquo;.
@@ -488,7 +488,7 @@ function PreviewModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col animate-slide-up-fade">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-light/80 dark:border-slate-700">
           <div className="min-w-0 flex-1 pr-4">
@@ -909,7 +909,7 @@ export default function FilesPage() {
           </div>
           <div className="h-2 bg-slate-light/60 rounded-full overflow-hidden">
             <div
-              className="h-full bg-brand rounded-full transition-all duration-150"
+              className="h-full animate-shimmer rounded-full transition-[width] duration-150"
               style={{ width: `${uploadPct}%` }}
             />
           </div>
@@ -936,6 +936,29 @@ export default function FilesPage() {
         </div>
       )}
 
+      {/* Always-visible upload zone */}
+      {!uploading && !uploadError && (
+        <div
+          onClick={() => fileInput.current?.click()}
+          className="flex items-center justify-center gap-4 w-full mb-6 py-5 rounded-2xl
+                     border-2 border-dashed border-brand/25 dark:border-brand/20
+                     bg-white dark:bg-slate-800/50 cursor-pointer
+                     hover:border-brand/50 hover:bg-brand-bg/50 dark:hover:bg-slate-800
+                     transition-all duration-200 group"
+        >
+          <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center text-brand
+                          group-hover:bg-brand/20 transition-colors shrink-0">
+            <IconUpload />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-slate-dark dark:text-slate-100">
+              Drop files here or <span className="text-brand">click to upload</span>
+            </p>
+            <p className="text-xs text-slate-mid dark:text-slate-400 mt-0.5">Any file up to 5 GB</p>
+          </div>
+        </div>
+      )}
+
       {/* ── Content ── */}
       <div
         className="relative"
@@ -957,8 +980,8 @@ export default function FilesPage() {
         </div>
       ) : folders.length === 0 && files.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="w-20 h-20 rounded-3xl bg-brand-bg flex items-center justify-center mb-4 text-brand">
-            <IconFolder />
+          <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-brand/15 to-brand-pale/20 dark:from-brand/20 dark:to-brand/5 flex items-center justify-center mb-5 text-brand shadow-sm">
+            <span className="scale-[2.2] block"><IconFolder /></span>
           </div>
           <p className="text-slate-dark font-semibold text-lg">This folder is empty</p>
           <p className="text-slate-mid text-sm mt-1 mb-6">
@@ -989,10 +1012,10 @@ export default function FilesPage() {
                       onDragLeave={(e) => handleFolderDragLeave(e)}
                       onDrop={(e) => handleFolderDrop(e, f)}
                       className={`group relative bg-white dark:bg-slate-800 border rounded-2xl p-4 flex flex-col
-                                 items-center gap-2 cursor-pointer select-none transition-all
+                                 items-center gap-2 cursor-pointer select-none transition-all duration-200
                                  ${isOver
-                                   ? 'border-brand bg-brand/5 shadow-md scale-[1.02]'
-                                   : 'border-slate-light dark:border-slate-700 hover:border-brand hover:shadow-sm'
+                                   ? 'border-brand bg-brand/5 shadow-lg scale-[1.02]'
+                                   : 'border-slate-light dark:border-slate-700 hover:border-brand/50 hover:shadow-md hover:scale-[1.02] hover:bg-brand-bg/30 dark:hover:bg-slate-700/40'
                                  }`}
                     >
                       {/* Dashed drop-target ring */}
@@ -1094,8 +1117,8 @@ export default function FilesPage() {
                       draggable
                       onDragStart={(e) => handleDragStart(e, f)}
                       onDragEnd={handleDragEnd}
-                      className={`flex items-center gap-4 px-5 py-3.5 hover:bg-brand-bg/50 dark:hover:bg-slate-700/50 transition group
-                                  cursor-grab active:cursor-grabbing
+                      className={`flex items-center gap-4 px-5 py-3.5 hover:bg-brand-bg/50 dark:hover:bg-slate-700/50 transition-all duration-200 group
+                                  cursor-grab active:cursor-grabbing border-l-2 border-l-transparent hover:border-l-brand hover:shadow-sm
                                   ${i !== files.length - 1 ? 'border-b border-slate-light/60 dark:border-slate-700/60' : ''}
                                   ${isDragging ? 'opacity-40 bg-brand-bg/30 dark:bg-slate-700/30' : ''}`}
                     >

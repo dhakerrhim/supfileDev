@@ -62,7 +62,7 @@ function ConfirmDialog({
 }: { message: string; onConfirm: () => void; onCancel: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 p-6 w-full max-w-sm shadow-xl">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 p-6 w-full max-w-sm shadow-xl animate-slide-up-fade">
         <p className="text-slate-dark dark:text-slate-100 font-medium mb-6">{message}</p>
         <div className="flex gap-3 justify-end">
           <button onClick={onCancel}
@@ -82,7 +82,7 @@ function ConfirmDialog({
 function Toast({ message, type = 'success' }: { message: string; type?: 'success' | 'error' }) {
   return (
     <div className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl text-white text-sm
-                    font-medium shadow-lg flex items-center gap-2 ${type === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>
+                    font-medium shadow-lg flex items-center gap-2 animate-slide-in-right ${type === 'error' ? 'bg-red-500' : 'bg-green-500'}`}>
       {type === 'error' ? '✗' : '✓'} {message}
     </div>
   );
@@ -199,8 +199,8 @@ export default function TrashPage() {
         </div>
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-28 text-center">
-          <div className="w-20 h-20 rounded-3xl bg-brand-bg flex items-center justify-center mb-4 text-slate-mid">
-            <IconTrash />
+          <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-slate-light/40 to-slate-light/10 dark:from-slate-700/60 dark:to-slate-700/20 flex items-center justify-center mb-5 text-slate-mid shadow-sm">
+            <span className="scale-[2.2] block"><IconTrash /></span>
           </div>
           <p className="text-slate-dark dark:text-slate-100 font-semibold text-lg">Trash is empty</p>
           <p className="text-slate-mid dark:text-slate-400 text-sm mt-1">Deleted files and folders will appear here.</p>
@@ -216,7 +216,8 @@ export default function TrashPage() {
             return (
               <div
                 key={`${item.kind}-${item.data.id}`}
-                className={`flex items-center gap-4 px-5 py-3.5 hover:bg-red-50/40 dark:hover:bg-red-900/10 transition group
+                className={`flex items-center gap-4 px-5 py-3.5 hover:bg-red-50/40 dark:hover:bg-red-900/10 transition-all duration-200 group
+                            border-l-2 border-l-transparent hover:border-l-red-400 hover:shadow-sm
                             ${i !== items.length - 1 ? 'border-b border-slate-light/60 dark:border-slate-700/60' : ''}`}
               >
                 {/* icon */}

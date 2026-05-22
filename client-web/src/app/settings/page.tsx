@@ -14,7 +14,7 @@ function Toast({ message, type }: { message: string; type: 'success' | 'error' }
   return (
     <div
       className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-medium
-                  flex items-center gap-2 transition-all duration-300
+                  flex items-center gap-2 animate-slide-in-right
                   ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}
     >
       {type === 'success' ? '✓' : '✕'} {message}
@@ -27,9 +27,12 @@ function Section({ title, description, children }: {
 }) {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 overflow-hidden">
-      <div className="px-6 py-5 border-b border-slate-light dark:border-slate-700 bg-brand-bg/30 dark:bg-slate-700/30">
-        <h2 className="text-base font-semibold text-slate-dark dark:text-slate-100">{title}</h2>
-        <p className="text-sm text-slate-mid dark:text-slate-400 mt-0.5">{description}</p>
+      <div className="px-6 py-5 border-b border-slate-light dark:border-slate-700 bg-gradient-to-r from-brand-bg/60 to-transparent dark:from-slate-700/40 dark:to-transparent flex items-start gap-3">
+        <div className="w-1 h-6 rounded-full bg-brand mt-0.5 shrink-0" />
+        <div>
+          <h2 className="text-base font-semibold text-slate-dark dark:text-slate-100">{title}</h2>
+          <p className="text-sm text-slate-mid dark:text-slate-400 mt-0.5">{description}</p>
+        </div>
       </div>
       <div className="px-6 py-6">{children}</div>
     </div>
@@ -155,7 +158,7 @@ export default function SettingsPage() {
 
         {/* ── Avatar + name header ── */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 px-6 py-5 flex items-center gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-brand/15 flex items-center justify-center text-brand font-bold text-2xl shrink-0">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand to-brand-light flex items-center justify-center text-white font-bold text-2xl shrink-0">
             {user?.display_name?.[0]?.toUpperCase() ?? '?'}
           </div>
           <div>

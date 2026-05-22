@@ -59,23 +59,65 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── Keyframe animations ── */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
 @layer components {
   .btn-primary {
     @apply w-full py-3 rounded-xl font-semibold text-white transition-all duration-200
-           bg-brand hover:bg-brand-light active:scale-95 focus:outline-none
-           focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+           bg-brand hover:bg-brand-light active:scale-95 focus-visible:outline-none
+           focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .input-field {
     @apply w-full px-4 py-3 rounded-xl border border-slate-light bg-white text-slate-dark
-           placeholder-slate-mid text-sm transition focus:outline-none
-           focus:ring-2 focus:ring-brand focus:border-brand
+           placeholder-slate-mid text-sm transition-all duration-200 focus-visible:outline-none
+           focus-visible:ring-2 focus-visible:ring-brand focus-visible:border-brand
            dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100
-           dark:placeholder-slate-400 dark:focus:border-brand;
+           dark:placeholder-slate-400 dark:focus-visible:border-brand;
   }
 
   .auth-card {
-    @apply bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-light
-           dark:border-slate-700 p-8 w-full max-w-md;
+    @apply bg-white/88 dark:bg-slate-800/88 backdrop-blur-xl rounded-2xl
+           shadow-2xl border border-brand-pale/40 dark:border-slate-700/60
+           p-8 w-full max-w-md;
+  }
+
+  .page-enter {
+    animation: fadeInUp 0.35s ease both;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease both;
+  }
+
+  .animate-slide-up-fade {
+    animation: slideUpFade 0.25s ease both;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, #2da2fd 0%, #3cb5ff 40%, #a5d3fe 60%, #2da2fd 100%);
+    background-size: 200% auto;
+    animation: shimmer 1.5s linear infinite;
   }
 }

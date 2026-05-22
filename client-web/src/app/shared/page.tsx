@@ -60,7 +60,7 @@ function Skeleton({ className = '' }: { className?: string }) {
 function Toast({ message }: { message: string }) {
   return (
     <div className="fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl bg-green-500 text-white
-                    text-sm font-medium shadow-lg flex items-center gap-2">
+                    text-sm font-medium shadow-lg flex items-center gap-2 animate-slide-in-right">
       ✓ {message}
     </div>
   );
@@ -98,7 +98,7 @@ function CreateLinkModal({ onClose, onCreated }: { onClose: () => void; onCreate
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl border border-slate-light p-6 w-full max-w-md shadow-xl">
+      <div className="bg-white rounded-2xl border border-slate-light p-6 w-full max-w-md shadow-xl animate-slide-up-fade">
         <h3 className="font-semibold text-slate-dark text-lg mb-1">Create public link</h3>
         <p className="text-sm text-slate-mid mb-5">Share a file or folder with anyone via a unique URL.</p>
 
@@ -264,8 +264,8 @@ export default function SharedPage() {
           <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-20 w-full" />)}</div>
         ) : links.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-20 h-20 rounded-3xl bg-brand-bg flex items-center justify-center mb-4 text-brand">
-              <IconShare />
+            <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-brand/15 to-brand-pale/20 dark:from-brand/20 dark:to-brand/5 flex items-center justify-center mb-5 text-brand shadow-sm">
+              <span className="scale-[2.2] block"><IconShare /></span>
             </div>
             <p className="text-slate-dark font-semibold text-lg">No public links yet</p>
             <p className="text-slate-mid text-sm mt-1 mb-6">Create a link to share files or folders with anyone.</p>
@@ -286,7 +286,8 @@ export default function SharedPage() {
               return (
                 <div
                   key={link.id}
-                  className={`flex items-center gap-4 px-5 py-4 group transition hover:bg-brand-bg/40
+                  className={`flex items-center gap-4 px-5 py-4 group transition-all duration-200 hover:bg-brand-bg/40
+                              border-l-2 border-l-transparent hover:border-l-brand hover:shadow-sm
                               ${i !== links.length - 1 ? 'border-b border-slate-light/60' : ''}`}
                 >
                   {/* icon */}
@@ -360,8 +361,8 @@ export default function SharedPage() {
           <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-20 w-full" />)}</div>
         ) : withMe.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-20 h-20 rounded-3xl bg-brand-bg flex items-center justify-center mb-4 text-slate-mid">
-              <IconFolder />
+            <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-slate-light/40 to-slate-light/10 dark:from-slate-700/60 dark:to-slate-700/20 flex items-center justify-center mb-5 text-slate-mid shadow-sm">
+              <span className="scale-[2.2] block"><IconFolder /></span>
             </div>
             <p className="text-slate-dark font-semibold text-lg">Nothing shared with you yet</p>
             <p className="text-slate-mid text-sm mt-1">When a teammate shares a folder with you, it will appear here.</p>
@@ -371,7 +372,8 @@ export default function SharedPage() {
             {withMe.map((folder, i) => (
               <div
                 key={folder.id}
-                className={`flex items-center gap-4 px-5 py-4 group hover:bg-brand-bg/40 transition
+                className={`flex items-center gap-4 px-5 py-4 group hover:bg-brand-bg/40 transition-all duration-200
+                            border-l-2 border-l-transparent hover:border-l-brand hover:shadow-sm
                             ${i !== withMe.length - 1 ? 'border-b border-slate-light/60' : ''}`}
               >
                 {/* icon */}

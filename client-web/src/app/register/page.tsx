@@ -63,7 +63,7 @@ export default function RegisterPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-slate-dark mb-1.5">Name</label>
             <input
@@ -155,8 +155,10 @@ export default function RegisterPage() {
 
         <a
           href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/auth/oauth/github`}
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-slate-light
-                     text-slate-dark text-sm font-medium hover:bg-brand-bg transition-colors duration-200"
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl
+                     bg-[#24292e] text-white text-sm font-medium shadow-sm
+                     hover:bg-[#1a1e22] hover:shadow-md hover:-translate-y-0.5
+                     transition-all duration-200"
         >
           <GithubIcon />
           Continue with GitHub

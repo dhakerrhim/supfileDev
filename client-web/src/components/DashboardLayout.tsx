@@ -57,13 +57,16 @@ export default function DashboardLayout({ children, user, onLogout }: Props) {
               <Link
                 key={href}
                 href={href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                   active
                     ? 'bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand'
-                    : 'text-slate-mid dark:text-slate-400 hover:bg-brand-bg dark:hover:bg-slate-700 hover:text-slate-dark dark:hover:text-slate-100'
+                    : 'text-slate-mid dark:text-slate-400 hover:bg-brand-bg dark:hover:bg-slate-700 hover:text-slate-dark dark:hover:text-slate-100 hover:translate-x-0.5'
                 }`}
               >
-                <span className={active ? 'text-brand' : 'text-slate-mid dark:text-slate-500'}>
+                {active && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-brand rounded-r-full" />
+                )}
+                <span className={`transition-colors duration-200 ${active ? 'text-brand' : 'text-slate-mid dark:text-slate-500'}`}>
                   <Icon />
                 </span>
                 {label}
@@ -89,7 +92,7 @@ export default function DashboardLayout({ children, user, onLogout }: Props) {
 
         {/* User + logout */}
         <div className="px-4 py-4 border-t border-slate-light dark:border-slate-700 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-brand/20 flex items-center justify-center text-brand font-semibold text-sm">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand to-brand-light flex items-center justify-center text-white font-semibold text-sm">
             {user?.display_name?.[0]?.toUpperCase() ?? '?'}
           </div>
           <div className="flex-1 min-w-0">
@@ -118,7 +121,25 @@ export default function DashboardLayout({ children, user, onLogout }: Props) {
             <span className="font-bold text-slate-dark dark:text-slate-100">SUPFile</span>
           </div>
 
-          <div className="flex-1" />
+          <div className="flex-1 flex items-center">
+            <form action="/files" method="get" className="relative w-full max-w-xs hidden sm:block">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-mid dark:text-slate-400">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </div>
+              <input
+                name="search"
+                type="search"
+                placeholder="Search files…"
+                className="w-full pl-9 pr-4 py-2 text-sm rounded-full bg-brand-bg dark:bg-slate-700
+                           border border-slate-light dark:border-slate-600
+                           text-slate-dark dark:text-slate-100 placeholder-slate-mid dark:placeholder-slate-400
+                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
+                           transition-all duration-200"
+              />
+            </form>
+          </div>
 
           <div className="text-sm text-slate-mid dark:text-slate-400 hidden sm:block">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
@@ -126,7 +147,7 @@ export default function DashboardLayout({ children, user, onLogout }: Props) {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-6 lg:p-8">{children}</main>
+        <main className="flex-1 p-6 lg:p-8 page-enter">{children}</main>
       </div>
     </div>
   );
