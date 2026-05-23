@@ -42,8 +42,10 @@ Thumbs.db
 # Server upload volume — never commit uploaded files
 server/storage/*
 !server/storage/.gitkeep
+
+# IDE / tool config (local only)
 .claude/
- 
-.claude/
- 
- 
+.cursor/
+
+# Archives
+*.zip

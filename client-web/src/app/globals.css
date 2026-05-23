@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
 
 :root {
   --brand:       #2da2fd;
@@ -53,71 +53,85 @@
 * { box-sizing: border-box; }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   background-color: var(--brand-bg);
   color: var(--text-dark);
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Keyframe animations ── */
+/* ── Animations ─────────────────────────────────────────────── */
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(14px); }
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(28px); }
-  to   { opacity: 1; transform: translateX(0); }
+@keyframes blobDrift {
+  0%, 100% { transform: translate(-30%, -30%) scale(1); }
+  50%       { transform: translate(-27%, -33%) scale(1.06); }
 }
 
-@keyframes slideUpFade {
-  from { opacity: 0; transform: translateY(18px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes blobDrift2 {
+  0%, 100% { transform: translate(30%, 30%) scale(1); }
+  50%       { transform: translate(33%, 27%) scale(1.06); }
 }
 
 @keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
 }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastBar {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* ── Global transitions ─────────────────────────────────────── */
+
+@layer base {
+  a, button {
+    transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* ── Utility classes ────────────────────────────────────────── */
+
+.page-enter {
+  animation: fadeSlideIn 0.25s ease-out both;
+}
+
+.blob-drift  { animation: blobDrift  12s ease-in-out infinite; }
+.blob-drift2 { animation: blobDrift2 15s ease-in-out infinite; }
+
+.toast-in  { animation: toastIn  0.2s ease-out both; }
+.toast-bar { animation: toastBar 3s   linear   both; }
+
+/* ── Component layer ────────────────────────────────────────── */
 
 @layer components {
   .btn-primary {
-    @apply w-full py-3 rounded-xl font-semibold text-white transition-all duration-200
-           bg-brand hover:bg-brand-light active:scale-95 focus-visible:outline-none
-           focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply w-full py-3 rounded-xl font-semibold text-white
+           bg-brand hover:bg-brand-light active:scale-95 focus:outline-none
+           focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .input-field {
     @apply w-full px-4 py-3 rounded-xl border border-slate-light bg-white text-slate-dark
-           placeholder-slate-mid text-sm transition-all duration-200 focus-visible:outline-none
-           focus-visible:ring-2 focus-visible:ring-brand focus-visible:border-brand
+           placeholder-slate-mid text-sm focus:outline-none
+           focus:ring-2 focus:ring-brand focus:border-brand focus:shadow-sm
            dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100
-           dark:placeholder-slate-400 dark:focus-visible:border-brand;
+           dark:placeholder-slate-400 dark:focus:border-brand;
   }
 
   .auth-card {
-    @apply bg-white/85 dark:bg-slate-800/85 backdrop-blur-xl rounded-2xl
-           shadow-2xl border border-brand-pale/40 dark:border-slate-700/60
-           p-8 w-full max-w-md;
-  }
-
-  .page-enter {
-    animation: fadeInUp 0.35s ease both;
-  }
-
-  .animate-slide-in-right {
-    animation: slideInRight 0.3s ease both;
-  }
-
-  .animate-slide-up-fade {
-    animation: slideUpFade 0.25s ease both;
-  }
-
-  .animate-shimmer {
-    background: linear-gradient(90deg, #2da2fd 0%, #3cb5ff 40%, #a5d3fe 60%, #2da2fd 100%);
-    background-size: 200% auto;
-    animation: shimmer 1.5s linear infinite;
+    @apply backdrop-blur-xl bg-white/75 dark:bg-slate-800/80 rounded-2xl shadow-xl
+           shadow-brand/10 border border-white/60 dark:border-slate-700/60 p-8 w-full max-w-md;
   }
 }

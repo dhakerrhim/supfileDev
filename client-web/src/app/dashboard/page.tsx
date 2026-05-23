@@ -5,6 +5,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/hooks/useAuth';
 import { useDashboard, type RecentFile } from '@/hooks/useDashboard';
 import api from '@/lib/api';
+import { useRouter } from 'next/navigation';
 import {
   IconFile, IconImage, IconVideo, IconMusic, IconUpload, IconChevronRight,
 } from '@/components/icons';
@@ -157,13 +158,16 @@ function Skeleton({ className = '' }: { className?: string }) {
 // ─── File row ─────────────────────────────────────────────────────────────────
 
 function FileRow({ file }: { file: RecentFile }) {
+  const router = useRouter();
   const cat  = mimeCategory(file.mime_type);
   const meta = CATEGORY_META[cat];
   const { Icon } = meta;
   return (
-    <div className="flex items-center gap-4 py-3 px-4 hover:bg-brand-bg/60 dark:hover:bg-slate-700/50
-                    rounded-xl transition-all duration-200 group cursor-pointer hover:shadow-sm
-                    border-l-2 border-l-transparent hover:border-l-brand">
+    <div
+      onClick={() => router.push('/files')}
+      className="flex items-center gap-4 py-3 px-4 hover:bg-brand-bg/60 dark:hover:bg-slate-700/50
+                  rounded-xl transition-colors group cursor-pointer"
+    >
       <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
         style={{ background: meta.bg, color: meta.color }}>
         <Icon />
@@ -227,8 +231,8 @@ export default function DashboardPage() {
 
       {/* ── Stat cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 border-l-4 border-l-brand p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand/15 to-brand/5 flex items-center justify-center text-brand shrink-0">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 border-l-[3px] border-l-brand p-5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand shrink-0">
             <IconUpload />
           </div>
           <div>
@@ -240,8 +244,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 border-l-4 border-l-[#3cb5ff] p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3cb5ff]/15 to-[#3cb5ff]/5 flex items-center justify-center text-brand shrink-0">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 border-l-[3px] border-l-brand-light p-5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand shrink-0">
             <IconFile />
           </div>
           <div>
@@ -253,8 +257,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 border-l-4 border-l-brand-pale p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-pale/50 to-brand-pale/20 flex items-center justify-center shrink-0">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 border-l-[3px] border-l-brand-pale p-5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-brand-pale/40 flex items-center justify-center shrink-0">
             <span className="text-brand font-bold text-sm">
               {dataLoading ? '—' : `${Math.round((quotaUsed / quotaTotal) * 100)}%`}
             </span>
@@ -358,8 +362,8 @@ export default function DashboardPage() {
               )
               : (
                 <div className="flex-1 flex flex-col items-center justify-center py-12 text-center">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand/15 to-brand-pale/20 dark:from-brand/20 dark:to-brand/5 flex items-center justify-center mb-4 text-brand shadow-sm">
-                    <span className="scale-[2] block"><IconFile /></span>
+                  <div className="w-16 h-16 rounded-2xl bg-brand-bg dark:bg-slate-700 flex items-center justify-center mb-4 text-brand">
+                    <IconFile />
                   </div>
                   <p className="text-slate-dark dark:text-slate-100 font-medium">No files yet</p>
                   <p className="text-sm text-slate-mid dark:text-slate-400 mt-1 mb-4">Upload your first file to get started</p>

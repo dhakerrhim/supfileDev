@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/hooks/useAuth';
 import api from '@/lib/api';
@@ -14,7 +14,7 @@ function Toast({ message, type }: { message: string; type: 'success' | 'error' }
   return (
     <div
       className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-medium
-                  flex items-center gap-2 animate-slide-in-right
+                  flex items-center gap-2 transition-all duration-300
                   ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}
     >
       {type === 'success' ? '✓' : '✕'} {message}
@@ -27,12 +27,9 @@ function Section({ title, description, children }: {
 }) {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 overflow-hidden">
-      <div className="px-6 py-5 border-b border-slate-light dark:border-slate-700 bg-gradient-to-r from-brand-bg/60 to-transparent dark:from-slate-700/40 dark:to-transparent flex items-start gap-3">
-        <div className="w-1 h-6 rounded-full bg-brand mt-0.5 shrink-0" />
-        <div>
-          <h2 className="text-base font-semibold text-slate-dark dark:text-slate-100">{title}</h2>
-          <p className="text-sm text-slate-mid dark:text-slate-400 mt-0.5">{description}</p>
-        </div>
+      <div className="px-6 py-5 border-b border-slate-light dark:border-slate-700 bg-brand-bg/30 dark:bg-slate-700/30">
+        <h2 className="text-base font-semibold text-slate-dark dark:text-slate-100">{title}</h2>
+        <p className="text-sm text-slate-mid dark:text-slate-400 mt-0.5">{description}</p>
       </div>
       <div className="px-6 py-6">{children}</div>
     </div>
@@ -60,8 +57,16 @@ function ThemeToggle({ isDark, onToggle }: { isDark: boolean; onToggle: () => vo
   );
 }
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 export default function SettingsPage() {
   const { user, loading: authLoading, logout } = useAuth();
+
+  // avatar
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [localAvatarUrl, setLocalAvatarUrl] = useState<string | null>(null);
+  const [avatarLoading,  setAvatarLoading]  = useState(false);
+  const [avatarRemoved,  setAvatarRemoved]  = useState(false);
 
   // profile
   const [displayName, setDisplayName] = useState('');
@@ -77,6 +82,9 @@ export default function SettingsPage() {
   // theme
   const [isDark, setIsDark] = useState(false);
 
+  // avatar image error fallback
+  const [avatarImgError, setAvatarImgError] = useState(false);
+
   // toast
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -87,6 +95,8 @@ export default function SettingsPage() {
     }
   }, [user]);
 
+  useEffect(() => { setAvatarImgError(false); }, [localAvatarUrl, user?.avatar_url]);
+
   useEffect(() => {
     setIsDark(getTheme() === 'dark');
   }, []);
@@ -94,6 +104,41 @@ export default function SettingsPage() {
   function showToast(message: string, type: 'success' | 'error') {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
+  }
+
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarLoading(true);
+    try {
+      const form = new FormData();
+      form.append('avatar', file);
+      const res = await api.post('/users/me/avatar', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setLocalAvatarUrl(res.data.avatar_url);
+      setAvatarRemoved(false);
+      showToast('Avatar updated!', 'success');
+    } catch {
+      showToast('Failed to upload avatar.', 'error');
+    } finally {
+      setAvatarLoading(false);
+      if (e.target) e.target.value = '';
+    }
+  }
+
+  async function handleAvatarRemove() {
+    setAvatarLoading(true);
+    try {
+      await api.delete('/users/me/avatar');
+      setLocalAvatarUrl(null);
+      setAvatarRemoved(true);
+      showToast('Avatar removed.', 'success');
+    } catch {
+      showToast('Failed to remove avatar.', 'error');
+    } finally {
+      setAvatarLoading(false);
+    }
   }
 
   function handleThemeToggle() {
@@ -158,9 +203,52 @@ export default function SettingsPage() {
 
         {/* ── Avatar + name header ── */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-light dark:border-slate-700 px-6 py-5 flex items-center gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand to-brand-light flex items-center justify-center text-white font-bold text-2xl shrink-0">
-            {user?.display_name?.[0]?.toUpperCase() ?? '?'}
-          </div>
+          {(() => {
+            const avatarSrc = avatarRemoved
+              ? null
+              : localAvatarUrl
+                ? `${API_BASE}${localAvatarUrl}`
+                : user?.avatar_url
+                  ? `${API_BASE}${user.avatar_url}`
+                  : null;
+            return (
+              <>
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  title="Click to change avatar"
+                  className="relative w-16 h-16 rounded-2xl shrink-0 cursor-pointer group focus:outline-none focus:ring-2 focus:ring-brand"
+                >
+                  {avatarSrc && !avatarImgError ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={avatarSrc} alt="Avatar" className="w-full h-full rounded-2xl object-cover" onError={() => setAvatarImgError(true)} />
+                  ) : (
+                    <div className="w-full h-full rounded-2xl bg-brand/15 flex items-center justify-center text-brand font-bold text-2xl">
+                      {user?.display_name?.[0]?.toUpperCase() ?? '?'}
+                    </div>
+                  )}
+                  <div className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                  </div>
+                  {avatarLoading && (
+                    <div className="absolute inset-0 rounded-2xl bg-black/50 flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                    </div>
+                  )}
+                </button>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                />
+              </>
+            );
+          })()}
           <div>
             {authLoading
               ? <><Skeleton className="h-5 w-32 mb-1" /><Skeleton className="h-4 w-48" /></>
@@ -169,6 +257,19 @@ export default function SettingsPage() {
                   {user?.display_name || 'No name set'}
                 </p>
                 <p className="text-sm text-slate-mid dark:text-slate-400">{user?.email}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-xs text-slate-mid dark:text-slate-400">Click avatar to change photo</p>
+                  {(localAvatarUrl || (!avatarRemoved && user?.avatar_url)) && (
+                    <button
+                      type="button"
+                      onClick={handleAvatarRemove}
+                      disabled={avatarLoading}
+                      className="text-xs text-red-400 hover:text-red-600 transition disabled:opacity-50"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
               </>
             }
           </div>
@@ -275,27 +376,6 @@ export default function SettingsPage() {
             <p className="text-xs text-slate-mid dark:text-slate-400">{pct}% used · {fmtGB(quotaTotal - quotaUsed)} free</p>
           </div>
         </Section>
-
-        {/* ── Danger zone ── */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-red-200 dark:border-red-900/50 overflow-hidden">
-          <div className="px-6 py-5 border-b border-red-100 dark:border-red-900/30 bg-red-50/50 dark:bg-red-900/10">
-            <h2 className="text-base font-semibold text-red-600 dark:text-red-400">Danger Zone</h2>
-            <p className="text-sm text-red-400 dark:text-red-500 mt-0.5">These actions are irreversible.</p>
-          </div>
-          <div className="px-6 py-5 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-slate-dark dark:text-slate-100">Log out of all sessions</p>
-              <p className="text-xs text-slate-mid dark:text-slate-400 mt-0.5">Revokes your current JWT and returns to login.</p>
-            </div>
-            <button
-              onClick={logout}
-              className="px-4 py-2 text-sm border border-red-300 dark:border-red-700 text-red-500 rounded-xl
-                         hover:bg-red-500 hover:text-white transition font-medium"
-            >
-              Log out
-            </button>
-          </div>
-        </div>
 
       </div>
 
